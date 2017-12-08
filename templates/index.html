@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='skeleton.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='myStyles.css')}}">
+</head>
+<body>
+    <div class="container">
+        <div class="row top-bar">
+            <h1>Welcome to<strong> THE WALL</strong></h1>
+        </div>
+        <div class="row reg-success">
+            {% with errors = get_flashed_messages(category_filter=['success']) %}
+                {% if errors %}
+                    <ul class="success-box">
+                        {% for error in errors %}
+                        <li class="success-text">{{error}}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+        </div>
+        <div class="row">
+            <div class="seven columns">
+                <img src="http://awoiaf.westeros.org/images/thumb/8/8a/The_Wall.png/400px-The_Wall.png" alt="">
+            </div>
+            <div class="five columns">
+                <div class="row"><h3>Login:</h3></div>
+                <form action="/login" method="POST">
+                    <div class="row">
+                        <div class="four columns">
+                            <label for="email">Email: </label>
+                        </div>
+                        <div class="eight columns">
+                            <input class="u-full-width" type="text" name="email">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="four columns">
+                            <label for="password">Password: </label>
+                        </div>
+                        <div class="eight columns">
+                            <input class="u-full-width" type="password" name="password">
+                        </div>
+                    </div>
+                        {% with errors = get_flashed_messages(category_filter=['error']) %}
+                            {% if errors %}
+                                <ul class="error-list">
+                                    {% for error in errors %}
+                                    <li class="error">{{error}}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endwith %}
+                        <div class="row">
+                            <input class="u-pull-right sign-in" type="submit" value="Sign In">
+                        </div>
+                </form>
+                <div class="row">
+                    <h5>Not a user? <a href="/registration">Register Here</a></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

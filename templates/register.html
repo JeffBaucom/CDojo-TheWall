@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='skeleton.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='myStyles.css')}}">
+</head>
+<body>
+    <div class="container">
+        <div class="row top-bar">
+            <h1><strong>THE WALL</strong> Registration</h1>
+        </div>
+        <form action="/register" class="registration-form" method="POST">
+            <div class="row">
+                <div class="six columns">
+                    <label for="first_name">First Name:</label>
+                    <input class="u-full-width" type="text" name="first_name">
+                </div>
+                <div class="six columns">
+                    <label for="last_name">Last Name:</label>
+                    <input class="u-full-width" type="text" name="last_name">
+                </div>
+            </div>
+            <div class="row">
+                <div class="three columns"><label for="email">Email: </label></div>
+                <div class="nine columns"><input class="u-full-width" type="text" name="email"></div>
+            </div>
+            <div class="row">
+                <div class="six columns">
+                    <label for="password">Password:</label>
+                    <input class="u-full-width" type="password" name="password">
+                </div>
+                <div class="six columns">
+                    <label for="confirm_password">Confirm Password:</label>
+                    <input class="u-full-width" type="password" name="confirm_password">
+                </div>
+            </div>
+            {% with errors = get_flashed_messages(category_filter=['error']) %}
+                {% if errors %}
+                    <ul class="error-list">
+                        {% for error in errors %}
+                        <li class="error">{{error}}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <input class="u-pull-right" type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+</html>

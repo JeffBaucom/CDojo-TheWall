@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='normalize.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='skeleton.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='myStyles.css')}}">
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar u-full-width">
+            <div class="row">
+                <div class="eight columns">
+                    <h1><strong>THE WALL</strong></h1>
+                </div>
+                <div class="four columns u-pull-right">
+                    <div class="row">
+                        <h5 class="header-user">You are logged in: <strong>{{user}}</strong></h5>
+                    </div>
+                    <div class="row">
+                        <a href="/logout" class="logout-button u-pull-right">Log out</a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="row message-row">
+            <h5>Post a Message</h5>
+            {% with errors = get_flashed_messages(category_filter=["message"]) %}
+                {% if errors %}
+                <ul class="error-list">
+                    {% for msg in errors %}
+                        <li class="error">{{msg}}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endwith %}
+            <form action="/message" method="POST">
+                <textarea name="message_text" class="u-full-width"></textarea>
+                <input class="u-pull-right" type="submit" value="Post Message">
+            </form>
+        </div>
+        <!-- render messages -->
+        <div class="messages-wrapper">
+            {% with errors = get_flashed_messages(category_filter=["success"]) %}
+                {% if errors %}
+                <ul class="success-box message-success">
+                    {% for msg in errors %}
+                        <li class="success-text">{{msg}}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endwith %}
+            {% if messages %}
+                {% for message in messages %}
+                <div id="{{message['id']}}" class="message {{'self-message' if user==message['username']}}">
+                    <div class="row">
+                        <h6 class="message-username">
+                            <span class="{{'self-username' if user==message['username']}}">{{message['username']}}</span>
+                            
+                            <div class="controls u-pull-right ">
+                                {% if user == message['username']%}
+                                <form action="/delete/message" method="POST">
+                                    <input type="hidden" name="message_id" value="{{message['id']}}">
+                                    <input class="delete-button" type="submit" value="delete">
+                                </form>
+                                {% endif%}
+                                <time class="message-timestamp timeago" datetime="{{message['created_at']}}"></time>
+                            </div>
+                        </h6>
+                    </div>
+                    <div class="row">
+                        <p class="message-text">
+                            {{message['message']}}
+                        </p>
+                    </div>
+                    <!-- render comments -->
+                    {% if message['comments'] %}
+                    <div class="comments">
+                        {% for comment in message['comments'] %}
+                        <div id="{{message['id']}}+{{comment['id']}}" class="comment {{'self-comment' if user == comment['username']}}  message">
+                                <div class="row">
+                                    
+                                    <h6 class="message-username comment-username"><span class="{{'self-username' if user==comment['username']}} ">{{ comment['username']}}</span>
+                                    <div class="controls u-pull-right ">
+                                        {% if user == comment['username'] %}
+                                        <form action="/delete/comment" method="POST">
+                                            <input type="hidden" name="comment_id" value="{{comment['id']}}">
+                                            <input type="hidden" name="message_id" value="{{message['id']}}">
+                                            <input class="delete-button" type="submit" value="delete">
+                                        </form>
+                                        {% endif%}
+                                        <time class="message-timestamp timeago" datetime="{{comment['created_at']}}"></time>
+                                    </div>
+                                    </h6>
+                                </div>
+                                <div class="row">
+                                    <p class="message-text comment-text">{{comment['comment']}}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if message['id'] == session['message_id'] %}
+                        {% with errors = get_flashed_messages(category_filter=["comment-success"]) %}
+                            {% if errors %}
+                            <ul class="success-box">
+                                {% for msg in errors %}
+                                    <li class="success-text">{{msg}}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                    <div class="row">
+                        <form action="/comment" method="POST">
+                            <input type="hidden" name="message_id" value="{{ message['id']}}">
+                            <textarea name="comment_text" class="u-full-width"></textarea>
+                            {% if message['id'] == session['message_id'] %}
+                                {% with errors = get_flashed_messages(category_filter=["comment"]) %}
+                                    {% if errors %}
+                                    <ul class="error-list">
+                                        {% for msg in errors %}
+                                            <li class="error">{{msg}}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                            <input class="u-pull-right" type="submit" value="Post Comment">
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+            
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timeago/1.6.1/jquery.timeago.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            jQuery("time.timeago").timeago();
+        })
+    </script>
+</body>
+</html>
